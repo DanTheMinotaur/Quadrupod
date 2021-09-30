@@ -2,27 +2,25 @@ from quadrupod import pca9685
 from machine import I2C, Pin
 import uasyncio
 
-SERVOS = pca9685.Servos(I2C(scl=Pin(5), sda=Pin(4)))
-
-
-async def move_servo(servo_index, degrees, wait=None):
-    print(f"Index: {servo_index} to {degrees} degrees")
-    SERVOS.position(servo_index, degrees)
-    if wait:
-        await uasyncio.sleep_ms(wait)
-    SERVOS.release(servo_index)
-
 
 class Servo:
+    SERVOS = pca9685.Servos(I2C(scl=Pin(5), sda=Pin(4)))
+
     def __init__(self, idx):
         self.index = idx
+        self.degrees = None
 
     async def move(self, degrees, wait=None):
         print(f"Index: {self.index} to {degrees} degrees")
-        SERVOS.position(self.index, degrees)
+        Servo.SERVOS.position(self.index, degrees)
         if wait:
-            await uasyncio.sleep_ms(wait)
-        SERVOS.release(self.index)
+            await uasyncio.sleep(wait)
+        self.degrees = degrees
+        Servo.SERVOS.release(self.index)
+
+    async def ensure_position(self):
+        Servo.SERVOS.position(self.index, self.degrees)
+        await uasyncio.sleep(0.5)
 
 
 class Leg:
@@ -32,7 +30,7 @@ class Leg:
         self.lower = Servo(l_idx)
         self.ref = ref
 
-    async def move_to(self, upper_pos=None, middle_pos=None, lower_pos=None):
+    async def move(self, upper_pos=None, middle_pos=None, lower_pos=None, wait=None):
         await uasyncio.gather(
             self.upper.move(upper_pos),
             self.middle.move(middle_pos),

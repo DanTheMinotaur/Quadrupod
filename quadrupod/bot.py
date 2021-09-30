@@ -13,11 +13,24 @@ async def move_servo(servo_index, degrees, wait=None):
     SERVOS.release(servo_index)
 
 
+class Servo:
+    def __init__(self, idx):
+        self.index = idx
+
+    async def move(self, degrees, wait=None):
+        print(f"Index: {self.index} to {degrees} degrees")
+        SERVOS.position(self.index, degrees)
+        if wait:
+            await uasyncio.sleep_ms(wait)
+        SERVOS.release(self.index)
+
+
 class Leg:
-    def __init__(self, u_idx, m_idx, l_idx):
-        self.upper = u_idx
-        self.middle = m_idx
-        self.lower = l_idx
+    def __init__(self, u_idx, m_idx, l_idx, ref=None):
+        self.upper = Servo(u_idx)
+        self.middle = Servo(m_idx)
+        self.lower = Servo(l_idx)
+        self.ref = ref
 
     async def move_to(self, upper_pos=None, middle_pos=None, lower_pos=None):
         await uasyncio.gather(
@@ -25,3 +38,6 @@ class Leg:
             self.middle.move(middle_pos),
             self.lower.move(lower_pos)
         )
+
+
+

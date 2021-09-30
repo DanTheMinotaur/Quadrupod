@@ -32,13 +32,13 @@ pip install adafruit-ampy
 Test Ampy
 
 ```shell
-ampy --port /dev/ttyUSB0  -b 115200 run ./tests/blink_led.py
+ampy --port /dev/ttyUSB0  -b 115200 run ./helpers/blink_led.py
 ```
 
 Ampy Commands
 
 ```shell
 ampy -p /dev/ttyUSB0 put ./quadrupod/
-ampy -p /dev/ttyUSB0 put ./tests/
+ampy -p /dev/ttyUSB0 put ./helpers/
 ampy -p /dev/ttyUSB0 ls 
 ```

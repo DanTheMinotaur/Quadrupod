@@ -42,3 +42,14 @@ ampy -p /dev/ttyUSB0 put ./quadrupod/
 ampy -p /dev/ttyUSB0 put ./helpers/
 ampy -p /dev/ttyUSB0 ls 
 ```
+
+# REPL commands
+
+## Legs
+
+```python
+from helpers.legs import *
+from uasyncio import run
+lf, lb, rf, rb = get_leg("lf"), get_leg("lb"), get_leg("rf"), get_leg("rb")
+run(lf.lower.move(90, 1))
+```
